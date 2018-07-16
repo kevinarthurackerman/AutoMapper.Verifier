@@ -16,6 +16,7 @@ namespace AutoMapper.Verifier.GUI
             var test3 = Mapper.Map<ClassB, ClassA>(new ClassB());
             var test2 = Mapper.Map<ClassC, ClassB>(new ClassC());
             var test4 = Mapper.Map<ClassB, ClassC>(new ClassB());
+            var test5 = Mapper.Map<ClassC>(new ClassB());
         }
     }
 }

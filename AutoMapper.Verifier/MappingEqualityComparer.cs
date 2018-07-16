@@ -11,6 +11,16 @@ namespace AutoMapper.Verifier
 
         public int GetHashCode(Mapping obj)
         {
+            if(obj.From == null)
+            {
+                return obj.To.GetHashCode();
+            }
+
+            if (obj.To == null)
+            {
+                return obj.From.GetHashCode();
+            }
+
             return obj.From.GetHashCode() ^ obj.To.GetHashCode();
         }
     }

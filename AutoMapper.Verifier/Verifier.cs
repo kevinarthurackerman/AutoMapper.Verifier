@@ -50,8 +50,6 @@ namespace AutoMapper.Verifier
                                 mappings.AddOrUpdateMapping(CreateMapping(methodCall, callSite, null, invertGenerics: true));
                                 break;
                             case "Map":
-                                // TODO: check to make sure generic parameters are filled in for all calls to map
-                                // cannot determine what generic type it is if they just call it and pass in "object"
                                 mappings.AddOrUpdateMapping(CreateMapping(methodCall, null, callSite));
                                 break;
                         }
@@ -76,6 +74,16 @@ namespace AutoMapper.Verifier
                 {
                     mappings.AddOrUpdateMapping(mapping.AddError("Mapping is not used."));
                 }
+
+                if(mapping.From == null)
+                {
+                    mappings.AddOrUpdateMapping(mapping.AddError("Could not determine source type."));
+                }
+
+                if (mapping.To == null)
+                {
+                    mappings.AddOrUpdateMapping(mapping.AddError("Could not determine destination type."));
+                }
             }
             
             Mappings = mappings.ToImmutableHashSet();
@@ -89,8 +97,8 @@ namespace AutoMapper.Verifier
                 genericInstance.GenericArguments.TryGetIndex(srcIndex, out var srcType);
                 genericInstance.GenericArguments.TryGetIndex(destIndex, out var destType);
 
-                srcType = srcType.GetElementType();
-                destType = destType.GetElementType();
+                srcType = srcType?.GetElementType();
+                destType = destType?.GetElementType();
 
                 return new Mapping(
                     srcType.GetCSharpType(), 

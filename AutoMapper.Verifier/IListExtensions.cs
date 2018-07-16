@@ -9,7 +9,7 @@ namespace AutoMapper.Verifier
     {
         internal static bool TryGetIndex<T>(this IList<T> list, int index, out T value)
         {
-            if(list.Count() >= index)
+            if(list.Count() >= index + 1)
             {
                 value = list[index];
                 return true;

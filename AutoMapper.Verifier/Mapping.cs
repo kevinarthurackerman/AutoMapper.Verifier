@@ -22,7 +22,7 @@ namespace AutoMapper.Verifier
 
         public override string ToString()
         {
-            return $"Mapping {From.FullName} => {To.FullName}";
+            return $"Mapping {From?.FullName ?? "???"} => {To?.FullName ?? "???"}";
         }
     }
 }
