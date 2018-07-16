@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace AutoMapper.Verifier
@@ -13,19 +12,14 @@ namespace AutoMapper.Verifier
                 mapping = new Mapping(
                         existingMapping.From,
                         existingMapping.To,
-                        existingMapping.CreateCallSites.Concat(mapping.CreateCallSites),
-                        existingMapping.MapCallSites.Concat(mapping.MapCallSites),
-                        existingMapping.Errors.Concat(mapping.Errors));
+                        existingMapping.CreateCallSites.Concat(mapping.CreateCallSites).Distinct(),
+                        existingMapping.MapCallSites.Concat(mapping.MapCallSites).Distinct(),
+                        existingMapping.Errors.Concat(mapping.Errors).Distinct());
 
                 mappings.Remove(existingMapping);
             }
 
             mappings.Add(mapping);
-        }
-
-        internal static void AddError(this HashSet<Mapping> mappings, Type from, Type to, string error)
-        {
-            AddOrUpdateMapping(mappings, new Mapping(from, to, null, null, new[] { error }));
         }
     }
 }

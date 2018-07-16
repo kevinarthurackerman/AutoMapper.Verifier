@@ -1,5 +1,6 @@
 ﻿using Mono.Cecil;
 using Mono.Cecil.Cil;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -13,8 +14,13 @@ namespace AutoMapper.Verifier
 
         public static IImmutableSet<Mapping> Mappings { get; private set; }
 
-        public static void VerifyMappings()
+        public static void VerifyMappings() => VerifyMappings(x => { });
+
+        public static void VerifyMappings(Action<VerifierConfiguration> configAction)
         {
+            var config = new VerifierConfiguration();
+            configAction(config);
+
             var mappings = new HashSet<Mapping>(equalityComparer);
 
             // find all mappings
@@ -62,33 +68,33 @@ namespace AutoMapper.Verifier
             {
                 if (mapping.CreateCallSites.Count() > 1)
                 {
-                    mappings.AddError(mapping.From, mapping.To, "Mappings cannot be declared at more than one call site.");
+                    AddError(mapping, "Mappings cannot be declared at more than one call site.", config.OnMultiplyDeclaredMapping);
                 }
 
                 if(mapping.CreateCallSites.Count() == 0)
                 {
-                    mappings.AddError(mapping.From, mapping.To, "Mapping is not declared or could not be found because the source or destination type could not be determined.");
+                    AddError(mapping, "Mapping is not declared or could not be found because the source or destination type could not be determined.", config.OnUndeclaredMapping);
                 }
 
                 if(mapping.From == null || mapping.To == null)
                 {
+                    AddError(mapping, "Could not determine if mapping is used because the source or destination type could not be determined.", config.OnIndeterminantMapping);
+
                     if (mapping.From == null)
                     {
-                        mappings.AddError(mapping.From, mapping.To, "Could not determine source type.");
+                        AddError(mapping, "Could not determine source type.", config.OnIndeterminantMapping);
                     }
 
                     if (mapping.To == null)
                     {
-                        mappings.AddError(mapping.From, mapping.To, "Could not determine destination type.");
+                        AddError(mapping, "Could not determine destination type.", config.OnIndeterminantMapping);
                     }
-
-                    mappings.AddError(mapping.From, mapping.To, "Could not determine if mapping is used because the source or destination type could not be determined.");
                 }
                 else
                 {
                     if (mapping.MapCallSites.Count() == 0)
                     {
-                        mappings.AddError(mapping.From, mapping.To, "Mapping is not used.");
+                        AddError(mapping, "Mapping is not used.", config.OnUnusedMapping);
                     }
                 }
             }
@@ -132,6 +138,22 @@ namespace AutoMapper.Verifier
                     destType.GetCSharpType(),
                     createCallSite != null ? new[] { createCallSite } : null,
                     mapCallSite != null ? new[] { mapCallSite } : null);
+            }
+
+            void AddError(Mapping mapping, string error, ErrorActions action)
+            {
+                switch(action)
+                {
+                    case ErrorActions.Ignore:
+                        break;
+                    case ErrorActions.LogError:
+                        mappings.AddOrUpdateMapping(new Mapping(mapping.From, mapping.To, null, null, new[] { error }));
+                        break;
+                    case ErrorActions.ThrowException:
+                        throw new AutoMapperVerificationException(mapping.From, mapping.To, mapping.CreateCallSites, mapping.MapCallSites, error);
+                    default:
+                        throw new NotSupportedException($"ErrorAction value of '{Enum.GetName(typeof(ErrorActions),action)}' is not supported.");
+                }
             }
         }
     }
