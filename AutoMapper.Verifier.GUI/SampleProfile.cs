@@ -8,6 +8,7 @@ namespace AutoMapper.Verifier.GUI
         {
             CreateMap<ClassA, ClassB>().ReverseMap();
             CreateMap<ClassB, ClassC>();
+            CreateMap(typeof(ClassC), typeof(ClassA));
         }
     }
 }

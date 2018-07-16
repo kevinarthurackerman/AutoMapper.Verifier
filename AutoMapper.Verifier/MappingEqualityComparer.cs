@@ -13,12 +13,12 @@ namespace AutoMapper.Verifier
         {
             if(obj.From == null)
             {
-                return obj.To.GetHashCode();
+                return obj.To?.GetHashCode() ?? 0;
             }
 
             if (obj.To == null)
             {
-                return obj.From.GetHashCode();
+                return obj.From?.GetHashCode() ?? 0;
             }
 
             return obj.From.GetHashCode() ^ obj.To.GetHashCode();

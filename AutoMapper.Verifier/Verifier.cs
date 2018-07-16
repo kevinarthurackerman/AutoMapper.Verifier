@@ -47,7 +47,7 @@ namespace AutoMapper.Verifier
                                 mappings.AddOrUpdateMapping(CreateMapping(methodCall, callSite, null));
                                 break;
                             case "ReverseMap":
-                                mappings.AddOrUpdateMapping(CreateMapping(methodCall, callSite, null, invertGenerics: true));
+                                mappings.AddOrUpdateMapping(CreateMapping(methodCall, callSite, null));
                                 break;
                             case "Map":
                                 mappings.AddOrUpdateMapping(CreateMapping(methodCall, null, callSite));
@@ -62,40 +62,60 @@ namespace AutoMapper.Verifier
             {
                 if (mapping.CreateCallSites.Count() > 1)
                 {
-                    mappings.AddOrUpdateMapping(mapping.AddError("Mappings cannot be declared at more than one call site."));
+                    mappings.AddError(mapping.From, mapping.To, "Mappings cannot be declared at more than one call site.");
                 }
 
                 if(mapping.CreateCallSites.Count() == 0)
                 {
-                    mappings.AddOrUpdateMapping(mapping.AddError("Mapping is not declared."));
+                    mappings.AddError(mapping.From, mapping.To, "Mapping is not declared.");
                 }
 
                 if(mapping.MapCallSites.Count() == 0)
                 {
-                    mappings.AddOrUpdateMapping(mapping.AddError("Mapping is not used."));
+                    mappings.AddError(mapping.From, mapping.To, "Mapping is not used.");
                 }
 
                 if(mapping.From == null)
                 {
-                    mappings.AddOrUpdateMapping(mapping.AddError("Could not determine source type."));
+                    mappings.AddError(mapping.From, mapping.To, "Could not determine source type.");
                 }
 
                 if (mapping.To == null)
                 {
-                    mappings.AddOrUpdateMapping(mapping.AddError("Could not determine destination type."));
+                    mappings.AddError(mapping.From, mapping.To, "Could not determine destination type.");
                 }
             }
             
             Mappings = mappings.ToImmutableHashSet();
 
-            Mapping CreateMapping(MethodReference methodReference, string createCallSite, string mapCallSite, bool invertGenerics = false)
+            Mapping CreateMapping(MethodReference methodReference, string createCallSite, string mapCallSite)
             {
                 var genericInstance = methodReference as IGenericInstance ?? methodReference.DeclaringType as IGenericInstance;
-                var srcIndex = invertGenerics ? 1 : 0;
-                var destIndex = invertGenerics ? 0 : 1;
-                
-                genericInstance.GenericArguments.TryGetIndex(srcIndex, out var srcType);
-                genericInstance.GenericArguments.TryGetIndex(destIndex, out var destType);
+
+                TypeReference srcType = null;
+                TypeReference destType = null;
+                switch (methodReference.Name)
+                {
+                    case "CreateMap":
+                        genericInstance?.GenericArguments.TryGetIndex(0, out srcType);
+                        genericInstance?.GenericArguments.TryGetIndex(1, out destType);
+                        break;
+                    case "ReverseMap":
+                        genericInstance?.GenericArguments.TryGetIndex(1, out srcType);
+                        genericInstance?.GenericArguments.TryGetIndex(0, out destType);
+                        break;
+                    case "Map":
+                        if (genericInstance?.GenericArguments.Count() == 1)
+                        {
+                            genericInstance?.GenericArguments.TryGetIndex(0, out destType);
+                        }
+                        else
+                        {
+                            genericInstance?.GenericArguments.TryGetIndex(0, out srcType);
+                            genericInstance?.GenericArguments.TryGetIndex(1, out destType);
+                        }
+                        break;
+                }
 
                 srcType = srcType?.GetElementType();
                 destType = destType?.GetElementType();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AutoMapper.Verifier
@@ -20,6 +21,11 @@ namespace AutoMapper.Verifier
             }
 
             mappings.Add(mapping);
+        }
+
+        internal static void AddError(this HashSet<Mapping> mappings, Type from, Type to, string error)
+        {
+            AddOrUpdateMapping(mappings, new Mapping(from, to, null, null, new[] { error }));
         }
     }
 }
