@@ -67,22 +67,29 @@ namespace AutoMapper.Verifier
 
                 if(mapping.CreateCallSites.Count() == 0)
                 {
-                    mappings.AddError(mapping.From, mapping.To, "Mapping is not declared.");
+                    mappings.AddError(mapping.From, mapping.To, "Mapping is not declared or could not be found because the source or destination type could not be determined.");
                 }
 
-                if(mapping.MapCallSites.Count() == 0)
+                if(mapping.From == null || mapping.To == null)
                 {
-                    mappings.AddError(mapping.From, mapping.To, "Mapping is not used.");
-                }
+                    if (mapping.From == null)
+                    {
+                        mappings.AddError(mapping.From, mapping.To, "Could not determine source type.");
+                    }
 
-                if(mapping.From == null)
-                {
-                    mappings.AddError(mapping.From, mapping.To, "Could not determine source type.");
-                }
+                    if (mapping.To == null)
+                    {
+                        mappings.AddError(mapping.From, mapping.To, "Could not determine destination type.");
+                    }
 
-                if (mapping.To == null)
+                    mappings.AddError(mapping.From, mapping.To, "Could not determine if mapping is used because the source or destination type could not be determined.");
+                }
+                else
                 {
-                    mappings.AddError(mapping.From, mapping.To, "Could not determine destination type.");
+                    if (mapping.MapCallSites.Count() == 0)
+                    {
+                        mappings.AddError(mapping.From, mapping.To, "Mapping is not used.");
+                    }
                 }
             }
             
