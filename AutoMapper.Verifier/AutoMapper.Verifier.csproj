@@ -1,7 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netcoreapp2.0;net40</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.1.0</Version>
+    <Authors>Kevin Ackerman</Authors>
+    <Company />
+    <Description>Quickly and simply make sure you have all the AutoMapper mappings you need, and none of the mappings that you do not need.</Description>
+    <Copyright>MIT</Copyright>
+    <PackageId>AutoMapperVerifier</PackageId>
+    <RepositoryUrl>https://github.com/kevinarthurackerman/automapper.verifier</RepositoryUrl>
+    <PackageTags>automapper</PackageTags>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/kevinarthurackerman/automapper.verifier</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

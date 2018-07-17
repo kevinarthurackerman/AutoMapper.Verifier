@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AutoMapper.Verifier
 {
@@ -19,6 +20,8 @@ namespace AutoMapper.Verifier
         public IEnumerable<string> MapCreationCallSites { get; }
         public IEnumerable<string> MapUsageCallSites { get; }
         public IEnumerable<string> Errors { get; }
+
+        public bool HasErrors => Errors.Any();
 
         public override string ToString()
         {
