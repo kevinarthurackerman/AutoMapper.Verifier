@@ -14,6 +14,8 @@ namespace AutoMapper.Verifier
 
         public static void VerifyMappings() => VerifyMappings(x => { });
 
+        public static void VerifyMappings(ErrorActions onError) => VerifyMappings(x => x.SetAllErrorActions(onError));
+
         public static void VerifyMappings(Action<VerifierConfiguration> configAction)
         {
             var config = new VerifierConfiguration();
