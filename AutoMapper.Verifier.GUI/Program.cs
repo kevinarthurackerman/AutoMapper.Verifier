@@ -6,8 +6,7 @@ namespace AutoMapper.Verifier.GUI
     {
         static void Main(string[] args)
         {
-            Verifier.VerifyMappings();
-            var mappings = Verifier.Mappings;
+            var mappings = Verifier.VerifyMappings();
         }
 
         public void FakeUseMaps()
