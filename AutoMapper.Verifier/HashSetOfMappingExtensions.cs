@@ -7,7 +7,8 @@ namespace AutoMapper.Verifier
     {
         internal static void AddOrUpdateMapping(this HashSet<Mapping> mappings, Mapping mapping)
         {
-            if (mappings.TryGetValue(mapping, out var existingMapping))
+            var existingMapping = mappings.SingleOrDefault(x => x.From == mapping.From && x.To == mapping.To);
+            if (existingMapping != null)
             {
                 mapping = new Mapping(
                         existingMapping.From,

@@ -2,9 +2,7 @@
 using Mono.Cecil.Cil;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
 
 namespace AutoMapper.Verifier
 {
@@ -12,7 +10,7 @@ namespace AutoMapper.Verifier
     {
         private static readonly IEqualityComparer<Mapping> equalityComparer = new MappingEqualityComparer();
 
-        public static IImmutableSet<Mapping> Mappings { get; private set; }
+        public static ISet<Mapping> Mappings { get; private set; }
 
         public static void VerifyMappings() => VerifyMappings(x => { });
 
@@ -24,10 +22,11 @@ namespace AutoMapper.Verifier
             var mappings = new HashSet<Mapping>(equalityComparer);
 
             // find all mappings
-            var assemblyFileName = Assembly.GetEntryAssembly().GetName().Name + ".dll";
-            var currentAssembly = AssemblyDefinition.ReadAssembly(assemblyFileName);
+            var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies().Where(x => !x.IsDynamic).ToList();
+            var loadedPaths = loadedAssemblies.Select(a => a.Location).ToArray();
+            var assemblyDefinitions = loadedPaths.Select(AssemblyDefinition.ReadAssembly);
 
-            var types = currentAssembly.MainModule.GetTypes()
+            var types = assemblyDefinitions.SelectMany(x => x.Modules.SelectMany(y => y.GetTypes()))
                 .Where(x => x.IsClass && !x.IsAbstract);
 
             foreach (var type in types)
@@ -99,7 +98,7 @@ namespace AutoMapper.Verifier
                 }
             }
             
-            Mappings = mappings.ToImmutableHashSet();
+            Mappings = mappings;
 
             Mapping CreateMapping(MethodReference methodReference, string createCallSite, string mapCallSite)
             {
@@ -129,9 +128,6 @@ namespace AutoMapper.Verifier
                         }
                         break;
                 }
-
-                srcType = srcType?.GetElementType();
-                destType = destType?.GetElementType();
 
                 return new Mapping(
                     srcType.GetCSharpType(), 

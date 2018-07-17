@@ -12,7 +12,12 @@ namespace AutoMapper.Verifier
                 return null;
             }
 
-            return Type.GetType(typeReference.FullName + ", " + typeReference.Module.Assembly.FullName);
+            var assembly = typeReference.Scope.MetadataScopeType == MetadataScopeType.AssemblyNameReference
+                 ? typeReference.Scope.ToString()
+                 : typeReference.Module.Assembly.FullName;
+            var fullyQualifiedType = typeReference.FullName.Replace('/', '+') + ", " + assembly;
+            var type = Type.GetType(fullyQualifiedType);
+            return type;
         }
     }
 }
