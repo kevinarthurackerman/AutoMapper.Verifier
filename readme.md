@@ -4,7 +4,11 @@ Quickly and simply make sure you have all the AutoMapper mappings you need, and 
 
 ## Getting Started
 
-Reference the NuGet package, call `.Verifier.VerifyMappings(...)` in your project startup code.
+Reference the [NuGet package](https://www.nuget.org/packages/AutoMapperVerifier/) `Install-Package AutoMapperVerifier`
+
+`Install-Package AutoMapperVerifier`
+
+Then call `.Verifier.VerifyMappings(...)` in your project startup code.
 
 ```
 using AutoMapper.Verifier;
@@ -52,7 +56,7 @@ Open to any and all contributions.
 
 ## Authors
 
-Kevin Ackerman
+[Kevin Ackerman](https://www.linkedin.com/in/kevin-arthur-ackerman/)
 
 ## License
 
