@@ -52,10 +52,10 @@ var mappings = Verifier.VerifyMappings();
 
 foreach(var mapping in mappings)
 {
-	if(mapping.HasErrors)
-	{
-		// do something
-	}
+    if(mapping.HasErrors)
+    {
+        // do something
+    }
 }
 ```
 
