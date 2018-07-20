@@ -56,35 +56,56 @@ namespace AutoMapper.Verifier
             // verify that we have all the mappings we need and that we don't have any that we don't need
             foreach(var mapping in mappings.Values.ToArray())
             {
-                if (mapping.MapCreationCallSites.Count() > 1)
+                if (mapping.From == null && mapping.To == null)
                 {
-                    AddError(mapping, "Mappings cannot be declared at more than one call site.", config.OnMultiplyDeclaredMapping);
-                }
-
-                if(!mapping.MapCreationCallSites.Any())
-                {
-                    AddError(mapping, "Mapping is not declared or could not be found because the source or destination type could not be determined.", config.OnUndeclaredMapping);
-                }
-
-                if(mapping.From == null || mapping.To == null)
-                {
-                    AddError(mapping, "Could not determine if mapping is used because the source or destination type could not be determined.", config.OnIndeterminantMapping);
-
-                    if (mapping.From == null)
+                    if(mapping.MapCreationCallSites.Any())
                     {
-                        AddError(mapping, "Could not determine source type.", config.OnIndeterminantMapping);
+                        AddError(mapping, "Could not determine the source or destination for one or more creation sites, therefore it is unknown if these mappings are used.", config.OnIndeterminantMappingCreation);
                     }
-
-                    if (mapping.To == null)
+                    if(mapping.MapUsageCallSites.Any())
                     {
-                        AddError(mapping, "Could not determine destination type.", config.OnIndeterminantMapping);
+                        AddError(mapping, "Could not determine the source or destination for one or more usage sites, therefore it is unknown if these mappings are created.", config.OnIndeterminantMappingUsage);
+                    }
+                }
+                else if (mapping.From == null)
+                {
+                    if (mapping.MapCreationCallSites.Any())
+                    {
+                        AddError(mapping, "Could not determine the source for one or more creation sites, therefore it is unknown if these mappings are used.", config.OnIndeterminantMappingCreation);
+                    }
+                    if (mapping.MapUsageCallSites.Any())
+                    {
+                        AddError(mapping, "Could not determine the source for one or more usage sites, therefore it is unknown if these mappings are created.", config.OnIndeterminantMappingUsage);
+                    }
+                }
+                else if (mapping.To == null)
+                {
+                    if (mapping.MapCreationCallSites.Any())
+                    {
+                        AddError(mapping, "Could not determine the destination for one or more creation sites, therefore it is unknown if these mappings are used.", config.OnIndeterminantMappingCreation);
+                    }
+                    if (mapping.MapUsageCallSites.Any())
+                    {
+                        AddError(mapping, "Could not determine the destination for one or more usage sites, therefore it is unknown if these mappings are created.", config.OnIndeterminantMappingUsage);
                     }
                 }
                 else
                 {
-                    if (mapping.MapUsageCallSites.Count() == 0)
+                    switch(mapping.MapCreationCallSites.Count())
                     {
-                        AddError(mapping, "Mapping is not used.", config.OnUnusedMapping);
+                        case 0:
+                            AddError(mapping, "Could not find the definition for this maping. Either the mapping is never created, or it's source or destination could not be determined.", config.OnUndeclaredMapping);
+                            break;
+                        case 1:
+                            break;
+                        default:
+                            AddError(mapping, "More than one definition was found for this maping. Mappings should be created once and only once.", config.OnMultiplyDeclaredMapping);
+                            break;
+                    }
+
+                    if(mapping.MapUsageCallSites.Count() == 0)
+                    {
+                        AddError(mapping, "Could not find any usages of this mapping. Either it is never used, or the source or destination type could not be determined.", config.OnUnusedMapping);
                     }
                 }
             }

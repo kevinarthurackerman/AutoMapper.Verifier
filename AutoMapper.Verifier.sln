@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMapper.Verifier", "AutoMapper.Verifier\AutoMapper.Verifier.csproj", "{6091771D-1163-49D2-86E4-BED6A1239866}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMapper.Verifier", "AutoMapper.Verifier\AutoMapper.Verifier.csproj", "{6091771D-1163-49D2-86E4-BED6A1239866}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMapper.Verifier.GUI", "AutoMapper.Verifier.GUI\AutoMapper.Verifier.GUI.csproj", "{421F4CB7-7A6B-4343-9C3D-A5E8990E7680}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMapper.Verifier.GUI", "AutoMapper.Verifier.GUI\AutoMapper.Verifier.GUI.csproj", "{421F4CB7-7A6B-4343-9C3D-A5E8990E7680}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
